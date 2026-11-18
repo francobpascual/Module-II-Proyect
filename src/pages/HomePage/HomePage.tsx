@@ -1,8 +1,18 @@
+import { useState } from "react";
 import { useGames } from "../../hooks/useGames";
 import GameList from "../../components/GameList/GameList";
+import SearchBar from "../../components/SearchBar/SearchBar";
 
 function HomePage() {
   const { games } = useGames();
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredGames = games.filter((game) =>
+    game.title
+      .toLowerCase()
+      .includes(searchTerm.trim().toLowerCase())
+  );
 
   return (
     <main className="min-h-screen bg-zinc-950 px-4 py-12 text-white">
@@ -17,7 +27,14 @@ function HomePage() {
           </p>
         </header>
 
-        <GameList games={games} />
+        <div className="mb-8">
+          <SearchBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+        </div>
+
+        <GameList games={filteredGames} />
       </div>
     </main>
   );
