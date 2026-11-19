@@ -6,22 +6,31 @@ import {
 
 import HomePage from "./pages/HomePage/HomePage";
 import GameDetailPage from "./pages/GameDetailPage/GameDetailPage";
-import Navbar from './components/Navbar/navbar';
+import LoginPage from "./pages/LoginPage/LoginPage";
+import Navbar from "./components/Navbar/navbar";
 
 function App() {
   return (
     <BrowserRouter>
-    <Navbar />
+      <Navbar />
+
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/"
+          element={<HomePage />}
+        />
+
         <Route
           path="/detail/:id"
           element={<GameDetailPage />}
-          
+        />
+
+        <Route
+          path="/login"
+          element={<LoginPage />}
         />
       </Routes>
     </BrowserRouter>
-
   );
 }
 
