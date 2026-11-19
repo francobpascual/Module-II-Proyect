@@ -1,19 +1,15 @@
-import { useEffect, useState } from "react";
-import type { Game } from "../interfaces/Game";
-import { seedGames } from "../data/seedGames";
-import { localStorageService } from "../services/localStorageService";
+
+import { useContext } from "react";
+import { GamesContext } from "../contexts/GamesContext";
 
 export function useGames() {
-  const [games, setGames] = useState<Game[]>(() => {
-    const storedGames =
-      localStorageService.getItem<Game[]>("games");
+  const context = useContext(GamesContext);
 
-    return storedGames ?? seedGames;
-  });
+  if (!context) {
+    throw new Error(
+      "useGames must be used within a GamesProvider"
+    );
+  }
 
-  useEffect(() => {
-    localStorageService.setItem("games", games);
-  }, [games]);
-
-  return { games, setGames };
+  return context;
 }
