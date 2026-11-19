@@ -1,7 +1,11 @@
+
+import { Link } from "react-router";
 import type { Game } from "../../interfaces/Game";
+
 interface GameCardProps {
   game: Game;
 }
+
 function GameCard({ game }: GameCardProps) {
   return (
     <article className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
@@ -24,12 +28,12 @@ function GameCard({ game }: GameCardProps) {
           ${game.price.toLocaleString("es-AR")}
         </p>
 
-        <button
-          type="button"
-          className="mt-5 w-full rounded-lg bg-red-600 px-4 py-3 font-semibold text-white"
+        <Link
+          to={`/detail/${game.id}`}
+          className="mt-5 block w-full rounded-lg bg-red-600 px-4 py-3 text-center font-semibold text-white hover:bg-red-700"
         >
           Ver detalles
-        </button>
+        </Link>
       </div>
     </article>
   );
