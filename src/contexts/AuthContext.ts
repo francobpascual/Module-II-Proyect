@@ -1,4 +1,3 @@
-
 import { createContext } from "react";
 import type { User } from "../interfaces/User";
 
@@ -9,6 +8,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => boolean;
   logout: () => void;
   isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(

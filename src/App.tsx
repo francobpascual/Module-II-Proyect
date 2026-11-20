@@ -8,12 +8,14 @@ import HomePage from "./pages/HomePage/HomePage";
 import GameDetailPage from "./pages/GameDetailPage/GameDetailPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import Navbar from "./components/Navbar/navbar";
+import AdminPage from "./pages/AdminPage/AdminPage";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-
+      <Navbar />  
       <Routes>
         <Route
           path="/"
@@ -29,6 +31,9 @@ function App() {
           path="/login"
           element={<LoginPage />}
         />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/admin" element={<AdminPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
