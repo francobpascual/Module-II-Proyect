@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import type { ReactNode } from "react";
 import type { User } from "../interfaces/User";
@@ -43,7 +44,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     void _password;
 
     setCurrentUser(authenticatedUser);
-
     localStorageService.setItem("currentUser", authenticatedUser);
 
     return true;
@@ -54,13 +54,17 @@ function AuthProvider({ children }: AuthProviderProps) {
     localStorageService.removeItem("currentUser");
   }
 
+  const isAuthenticated = currentUser !== null;
+  const isAdmin = currentUser?.role === "admin";
+
   return (
     <AuthContext.Provider
       value={{
         currentUser,
         login,
         logout,
-        isAuthenticated: currentUser !== null,
+        isAuthenticated,
+        isAdmin,
       }}
     >
       {children}
