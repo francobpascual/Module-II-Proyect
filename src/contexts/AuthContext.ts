@@ -1,4 +1,3 @@
-
 import { createContext } from "react";
 import type { User } from "../interfaces/User";
 
