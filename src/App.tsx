@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import Navbar from "./components/Navbar/navbar";
 import AdminPage from "./pages/AdminPage/AdminPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Footer from './components/Footer/footer';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
         </Route>
       </Routes>
+       <Footer />
     </BrowserRouter>
   );
 }
