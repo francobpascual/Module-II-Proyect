@@ -75,6 +75,22 @@ export const gameService = {
     return updatedGame;
   },
 
+  remove(id: string): boolean {
+    const games = this.getAll();
+
+    const updatedGames = games.filter(
+      (game) => game.id !== id
+    );
+
+    if (updatedGames.length === games.length) {
+      return false;
+    }
+
+    this.saveAll(updatedGames);
+
+    return true;
+  },
+
   subscribe(callback: () => void): () => void {
     window.addEventListener(GAMES_UPDATED_EVENT, callback);
 
