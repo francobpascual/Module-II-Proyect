@@ -1,4 +1,5 @@
-import { ShieldCheck, Gamepad2 } from "lucide-react";
+import { Link } from "react-router";
+import { ShieldCheck, Gamepad2, Plus } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useGames } from "../../hooks/useGames";
 import AdminGameTable from "../../components/AdminGameTable/AdminGameTable";
@@ -27,7 +28,7 @@ function AdminPage() {
         </div>
 
         <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Gamepad2 className="text-red-500" size={26} />
 
@@ -36,9 +37,19 @@ function AdminPage() {
               </h2>
             </div>
 
-            <span className="rounded-lg bg-zinc-800 px-3 py-2 text-sm text-zinc-300">
-              Total: {games.length}
-            </span>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-lg bg-zinc-800 px-3 py-2 text-sm text-zinc-300">
+                Total: {games.length}
+              </span>
+
+              <Link
+                to="/admin/games/new"
+                className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                <Plus size={18} />
+                Agregar videojuego
+              </Link>
+            </div>
           </div>
 
           <AdminGameTable games={games} />
