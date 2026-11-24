@@ -1,57 +1,37 @@
 
 import { useState } from "react";
 import type { ReactNode } from "react";
-import type { User } from "../interfaces/User";
-import { seedUsers } from "../data/seedUsers";
-import { localStorageService } from "../services/localStorageService";
 import { AuthContext } from "./AuthContext";
 import type { AuthUser } from "./AuthContext";
+import { authService } from "../services/authService";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 function AuthProvider({ children }: AuthProviderProps) {
-  const [users] = useState<User[]>(() => {
-    const storedUsers =
-      localStorageService.getItem<User[]>("users");
-
-    if (storedUsers !== null) {
-      return storedUsers;
-    }
-
-    localStorageService.setItem("users", seedUsers);
-
-    return seedUsers;
-  });
-
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(
-    () => localStorageService.getItem<AuthUser>("currentUser")
+    () => authService.getCurrentUser()
   );
 
   function login(email: string, password: string): boolean {
-    const foundUser = users.find(
-      (user) =>
-        user.email.toLowerCase() === email.trim().toLowerCase() &&
-        user.password === password
+    const authenticatedUser = authService.login(
+      email,
+      password
     );
 
-    if (!foundUser) {
+    if (authenticatedUser === null) {
       return false;
     }
 
-    const { password: _password, ...authenticatedUser } = foundUser;
-    void _password;
-
     setCurrentUser(authenticatedUser);
-    localStorageService.setItem("currentUser", authenticatedUser);
 
     return true;
   }
 
   function logout(): void {
+    authService.logout();
     setCurrentUser(null);
-    localStorageService.removeItem("currentUser");
   }
 
   const isAuthenticated = currentUser !== null;
