@@ -1,6 +1,7 @@
 
 import { Link } from "react-router";
 import type { Game } from "../../interfaces/Game";
+import "./GameCard.css";
 
 interface GameCardProps {
   game: Game;
@@ -8,32 +9,26 @@ interface GameCardProps {
 
 function GameCard({ game }: GameCardProps) {
   return (
-    <article className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
-      <img
-        src={game.image}
-        alt={game.title}
-        className="h-52 w-full object-cover"
-      />
+    <article className="game-card">
+      <div className="game-card__artwork">
+        <img src={game.image} alt="" loading="lazy" />
+        <span className="game-card__category">{game.category}</span>
+      </div>
 
-      <div className="p-5">
-        <span className="text-sm text-red-500">
-          {game.category}
-        </span>
-
-        <h3 className="mt-2 text-xl font-bold text-white">
-          {game.title}
-        </h3>
-
-        <p className="mt-3 text-2xl font-semibold text-white">
-          ${game.price.toLocaleString("es-AR")}
-        </p>
-
-        <Link
-          to={`/detail/${game.id}`}
-          className="mt-5 block w-full rounded-lg bg-red-600 px-4 py-3 text-center font-semibold text-white hover:bg-red-700"
-        >
-          Ver detalles
-        </Link>
+      <div className="game-card__content">
+        <h3 className="game-card__title">{game.title}</h3>
+        <div className="game-card__footer">
+          <p className="game-card__price">
+            ${game.price.toLocaleString("es-AR")}
+          </p>
+          <Link
+            to={`/detail/${game.id}`}
+            className="game-card__link"
+          >
+            Ver detalles
+            <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
       </div>
     </article>
   );
