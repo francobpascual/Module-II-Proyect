@@ -1,39 +1,67 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Gamepad2, Save } from "lucide-react";
-import { Link } from "react-router";
 import { gameSchema } from "../../schemas/gameSchema";
 import type { GameFormData } from "../../schemas/gameSchema";
 import { gameService } from "../../services/gameService";
 
 function GameForm() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
+  const isEditing = Boolean(id);
+  const existingGame = id ? gameService.getById(id) : undefined;
+
   const [saveError, setSaveError] = useState("");
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<GameFormData>({
     resolver: zodResolver(gameSchema),
     defaultValues: {
-      title: "",
-      price: 0,
-      category: "",
-      image: "",
-      description: "",
-      requirements: "",
-      developer: "",
+      title: existingGame?.title ?? "",
+      price: existingGame?.price ?? 0,
+      category: existingGame?.category ?? "",
+      image: existingGame?.image ?? "",
+      description: existingGame?.description ?? "",
+      requirements: existingGame?.requirements ?? "",
+      developer: existingGame?.developer ?? "",
     },
   });
+
+  useEffect(() => {
+    reset({
+      title: existingGame?.title ?? "",
+      price: existingGame?.price ?? 0,
+      category: existingGame?.category ?? "",
+      image: existingGame?.image ?? "",
+      description: existingGame?.description ?? "",
+      requirements: existingGame?.requirements ?? "",
+      developer: existingGame?.developer ?? "",
+    });
+  }, [id, reset]);
 
   function onSubmit(data: GameFormData) {
     setSaveError("");
 
     try {
-      gameService.create(data);
+      if (isEditing && id) {
+        const updatedGame = gameService.update(id, data);
+
+        if (!updatedGame) {
+          setSaveError("No se encontró el videojuego.");
+          return;
+        }
+      } else {
+        gameService.create(data);
+      }
+
       navigate("/admin");
     } catch {
       setSaveError(
@@ -44,6 +72,23 @@ function GameForm() {
 
   const inputClassName =
     "w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none transition focus:border-red-500";
+
+  if (isEditing && !existingGame) {
+    return (
+      <main className="flex min-h-[80vh] flex-col items-center justify-center bg-zinc-950 px-4 text-white">
+        <h1 className="mb-4 text-2xl font-bold">
+          Videojuego no encontrado
+        </h1>
+
+        <Link
+          to="/admin"
+          className="rounded-lg bg-red-600 px-5 py-3 font-semibold transition hover:bg-red-700"
+        >
+          Volver al panel
+        </Link>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-[80vh] bg-zinc-950 px-4 py-12 text-white">
@@ -62,11 +107,13 @@ function GameForm() {
 
             <div>
               <h1 className="text-2xl font-bold">
-                Agregar videojuego
+                {isEditing ? "Editar videojuego" : "Agregar videojuego"}
               </h1>
 
               <p className="mt-1 text-sm text-zinc-400">
-                Completá los datos del nuevo videojuego.
+                {isEditing
+                  ? "Modificá los datos del videojuego."
+                  : "Completá los datos del nuevo videojuego."}
               </p>
             </div>
           </div>
@@ -259,7 +306,9 @@ function GameForm() {
                 className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-5 py-3 font-semibold transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Save size={18} />
-                Guardar videojuego
+                {isEditing
+                  ? "Guardar cambios"
+                  : "Guardar videojuego"}
               </button>
             </div>
           </form>
