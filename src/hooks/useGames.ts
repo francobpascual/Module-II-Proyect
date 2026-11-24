@@ -1,15 +1,24 @@
 
-import { useContext } from "react";
-import { GamesContext } from "../contexts/GamesContext";
+import { useEffect, useState } from "react";
+import type { Game } from "../interfaces/Game";
+import { gameService } from "../services/gameService";
 
 export function useGames() {
-  const context = useContext(GamesContext);
+  const [games, setGames] = useState<Game[]>(() => {
+    return gameService.getAll();
+  });
 
-  if (!context) {
-    throw new Error(
-      "useGames must be used within a GamesProvider"
-    );
-  }
+  useEffect(() => {
+    function updateGames() {
+      setGames(gameService.getAll());
+    }
 
-  return context;
+    const unsubscribe = gameService.subscribe(updateGames);
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  return { games };
 }
