@@ -1,3 +1,4 @@
+
 import type { Game } from "../interfaces/Game";
 import { seedGames } from "../data/seedGames";
 import { localStorageService } from "./localStorageService";
@@ -46,11 +47,42 @@ export const gameService = {
     return newGame;
   },
 
+  update(
+    id: string,
+    gameData: Omit<Game, "id">
+  ): Game | undefined {
+    const games = this.getAll();
+
+    const existingGame = games.find(
+      (game) => game.id === id
+    );
+
+    if (!existingGame) {
+      return undefined;
+    }
+
+    const updatedGame: Game = {
+      ...gameData,
+      id,
+    };
+
+    const updatedGames = games.map((game) =>
+      game.id === id ? updatedGame : game
+    );
+
+    this.saveAll(updatedGames);
+
+    return updatedGame;
+  },
+
   subscribe(callback: () => void): () => void {
     window.addEventListener(GAMES_UPDATED_EVENT, callback);
 
     return () => {
-      window.removeEventListener(GAMES_UPDATED_EVENT, callback);
+      window.removeEventListener(
+        GAMES_UPDATED_EVENT,
+        callback
+      );
     };
   },
 };

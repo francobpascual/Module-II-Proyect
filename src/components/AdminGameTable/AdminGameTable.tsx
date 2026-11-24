@@ -1,3 +1,6 @@
+
+import { Link } from "react-router";
+import { Pencil } from "lucide-react";
 import type { Game } from "../../interfaces/Game";
 
 interface AdminGameTableProps {
@@ -15,7 +18,7 @@ function AdminGameTable({ games }: AdminGameTableProps) {
 
   return (
     <div className="overflow-x-auto rounded-xl border border-zinc-800">
-      <table className="w-full min-w-[650px] text-left text-sm text-white">
+      <table className="w-full min-w-[750px] text-left text-sm text-white">
         <thead className="bg-zinc-800 text-zinc-300">
           <tr>
             <th className="px-5 py-4 font-semibold">
@@ -32,6 +35,10 @@ function AdminGameTable({ games }: AdminGameTableProps) {
 
             <th className="px-5 py-4 text-right font-semibold">
               Precio
+            </th>
+
+            <th className="px-5 py-4 text-center font-semibold">
+              Acciones
             </th>
           </tr>
         </thead>
@@ -72,6 +79,16 @@ function AdminGameTable({ games }: AdminGameTableProps) {
 
               <td className="px-5 py-4 text-right font-semibold text-red-500">
                 ${game.price.toLocaleString("es-AR")}
+              </td>
+
+              <td className="px-5 py-4 text-center">
+                <Link
+                  to={`/admin/games/edit/${game.id}`}
+                  className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 font-medium text-zinc-200 transition hover:border-red-500 hover:text-red-500"
+                >
+                  <Pencil size={16} />
+                  Editar
+                </Link>
               </td>
             </tr>
           ))}

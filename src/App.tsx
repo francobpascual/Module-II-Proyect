@@ -1,3 +1,4 @@
+
 import {
   BrowserRouter,
   Routes,
@@ -42,6 +43,11 @@ function App() {
 
           <Route
             path="/admin/games/new"
+            element={<GameForm />}
+          />
+
+          <Route
+            path="/admin/games/edit/:id"
             element={<GameForm />}
           />
         </Route>
