@@ -1,4 +1,3 @@
-
 import type { Game } from "../interfaces/Game";
 import { seedGames } from "../data/seedGames";
 import { localStorageService } from "./localStorageService";
@@ -32,6 +31,19 @@ export const gameService = {
     window.dispatchEvent(
       new Event(GAMES_UPDATED_EVENT)
     );
+  },
+
+  create(gameData: Omit<Game, "id">): Game {
+    const games = this.getAll();
+
+    const newGame: Game = {
+      id: crypto.randomUUID(),
+      ...gameData,
+    };
+
+    this.saveAll([...games, newGame]);
+
+    return newGame;
   },
 
   subscribe(callback: () => void): () => void {
