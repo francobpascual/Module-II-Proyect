@@ -1,22 +1,69 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router";
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+} from "react-router";
 import { useAuth } from "../../hooks/useAuth";
+import { pcStorageKey } from "../PCProfileBridge/PCProfileBridge";
 import "./navbar.css";
 
-const PC_CHECKER_URL = "/downloads/GAMERLIX_PC_Checker_v4.exe";
+const PC_CHECKER_URL =
+  "/downloads/GAMERLIX_PC_Checker_v4.exe";
+
+function hasSavedPCProfile(userId?: string): boolean {
+  if (!userId) return false;
+
+  try {
+    const stored = localStorage.getItem(pcStorageKey(userId));
+
+    if (!stored) return false;
+
+    const profile: unknown = JSON.parse(stored);
+
+    if (typeof profile !== "object" || profile === null) {
+      return false;
+    }
+
+    const data = profile as Record<string, unknown>;
+
+    return (
+      typeof data.CPU === "object" &&
+      data.CPU !== null &&
+      typeof data.RAMGB === "number" &&
+      Array.isArray(data.GPUs) &&
+      Array.isArray(data.Disks)
+    );
+  } catch {
+    return false;
+  }
+}
 
 export default function Navbar() {
-  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const {
+    currentUser,
+    isAuthenticated,
+    isAdmin,
+    logout,
+  } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const [scrolled, setScrolled] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
+  const [pcOpen, setPcOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const [hasPCData, setHasPCData] = useState(() =>
+    hasSavedPCProfile(currentUser?.id)
+  );
+
   const shopRef = useRef<HTMLDivElement>(null);
+  const pcRef = useRef<HTMLDivElement>(null);
+
   const isHome = location.pathname === "/";
 
   useEffect(() => {
@@ -37,43 +84,102 @@ export default function Navbar() {
 
   useEffect(() => {
     setShopOpen(false);
+    setPcOpen(false);
     setMobileOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
+    const refreshPCStatus = () => {
+      setHasPCData(hasSavedPCProfile(currentUser?.id));
+    };
+
+    refreshPCStatus();
+
+    window.addEventListener(
+      "gamerlix-pc-updated",
+      refreshPCStatus
+    );
+
+    window.addEventListener("storage", refreshPCStatus);
+
+    return () => {
+      window.removeEventListener(
+        "gamerlix-pc-updated",
+        refreshPCStatus
+      );
+
+      window.removeEventListener(
+        "storage",
+        refreshPCStatus
+      );
+    };
+  }, [currentUser?.id]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
       if (
         shopRef.current &&
-        !shopRef.current.contains(event.target as Node)
+        !shopRef.current.contains(target)
       ) {
         setShopOpen(false);
+      }
+
+      if (
+        pcRef.current &&
+        !pcRef.current.contains(target)
+      ) {
+        setPcOpen(false);
       }
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setShopOpen(false);
+        setPcOpen(false);
         setMobileOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    document.addEventListener(
+      "keydown",
+      handleEscape
+    );
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
     };
   }, []);
 
   const handleLogout = () => {
     logout();
     setShopOpen(false);
+    setPcOpen(false);
     setMobileOpen(false);
+    setHasPCData(false);
+
     navigate("/", { replace: true });
   };
 
-  const navClass = ({ isActive }: { isActive: boolean }) =>
+  const navClass = ({
+    isActive,
+  }: {
+    isActive: boolean;
+  }) =>
     `cinematic-nav__link ${
       isActive ? "cinematic-nav__link--active" : ""
     }`;
@@ -82,7 +188,9 @@ export default function Navbar() {
     <header
       className={[
         "cinematic-nav",
-        isHome ? "cinematic-nav--home" : "cinematic-nav--inner",
+        isHome
+          ? "cinematic-nav--home"
+          : "cinematic-nav--inner",
         scrolled ? "cinematic-nav--scrolled" : "",
       ].join(" ")}
     >
@@ -92,7 +200,10 @@ export default function Navbar() {
           className="cinematic-nav__brand"
           aria-label="Gamerlix - Inicio"
         >
-          <span className="cinematic-nav__symbol">X</span>
+          <span className="cinematic-nav__symbol">
+            X
+          </span>
+
           <span className="cinematic-nav__brand-name">
             GAMERLIX
           </span>
@@ -102,10 +213,15 @@ export default function Navbar() {
           className="cinematic-nav__desktop"
           aria-label="Navegación principal"
         >
-          <NavLink to="/" end className={navClass}>
+          <NavLink
+            to="/"
+            end
+            className={navClass}
+          >
             INICIO
           </NavLink>
 
+          {/* TIENDA */}
           <div
             ref={shopRef}
             className="cinematic-nav__dropdown"
@@ -115,9 +231,14 @@ export default function Navbar() {
             <button
               type="button"
               className={`cinematic-nav__link cinematic-nav__dropdown-trigger ${
-                shopOpen ? "cinematic-nav__link--active" : ""
+                shopOpen
+                  ? "cinematic-nav__link--active"
+                  : ""
               }`}
-              onClick={() => setShopOpen((prev) => !prev)}
+              onClick={() => {
+                setShopOpen((prev) => !prev);
+                setPcOpen(false);
+              }}
               aria-expanded={shopOpen}
               aria-haspopup="true"
               aria-controls="cinematic-shop-menu"
@@ -160,28 +281,90 @@ export default function Navbar() {
             </div>
           </div>
 
-          <NavLink to="/about" className={navClass}>
+          <NavLink
+            to="/about"
+            className={navClass}
+          >
             ACERCA DE
           </NavLink>
 
+          {/* DETECTAR MI PC */}
           {isAuthenticated && (
-            <a
-              href={PC_CHECKER_URL}
-              download="GAMERLIX_PC_Checker_v4.exe"
-              className="cinematic-nav__link"
-              title="Descargar el detector de hardware de GAMERLIX"
+            <div
+              ref={pcRef}
+              className="cinematic-nav__dropdown"
+              onMouseEnter={() => setPcOpen(true)}
+              onMouseLeave={() => setPcOpen(false)}
             >
-              DETECTAR MI PC
-            </a>
+              <button
+                type="button"
+                className={`cinematic-nav__link cinematic-nav__dropdown-trigger ${
+                  pcOpen
+                    ? "cinematic-nav__link--active"
+                    : ""
+                }`}
+                onClick={() => {
+                  setPcOpen((prev) => !prev);
+                  setShopOpen(false);
+                }}
+                aria-expanded={pcOpen}
+                aria-haspopup="true"
+                aria-controls="cinematic-pc-menu"
+              >
+                DETECTAR MI PC
+
+                <span
+                  className="cinematic-nav__chevron"
+                  aria-hidden="true"
+                >
+                  ▾
+                </span>
+              </button>
+
+              <div
+                id="cinematic-pc-menu"
+                className={`cinematic-nav__dropdown-menu ${
+                  pcOpen
+                    ? "cinematic-nav__dropdown-menu--open"
+                    : ""
+                }`}
+                aria-hidden={!pcOpen}
+                inert={!pcOpen}
+              >
+                <a
+                  href={PC_CHECKER_URL}
+                  download="GAMERLIX_PC_Checker_v4.exe"
+                  className="cinematic-nav__dropdown-item"
+                  onClick={() => setPcOpen(false)}
+                >
+                  DESCARGAR DETECTOR
+                </a>
+
+                {hasPCData && (
+                  <NavLink
+                    to="/mi-pc"
+                    className="cinematic-nav__dropdown-item"
+                    onClick={() => setPcOpen(false)}
+                  >
+                    DATOS DE MI PC
+                  </NavLink>
+                )}
+              </div>
+            </div>
           )}
 
+          {/* ADMINISTRADOR */}
           {isAdmin && (
-            <NavLink to="/admin" className={navClass}>
+            <NavLink
+              to="/admin"
+              className={navClass}
+            >
               PANEL ADMINISTRATIVO
             </NavLink>
           )}
         </nav>
 
+        {/* SESIÓN */}
         <div className="cinematic-nav__actions">
           {isAuthenticated ? (
             <button
@@ -201,6 +384,7 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* BOTÓN MÓVIL */}
         <button
           type="button"
           className={`cinematic-nav__mobile-toggle ${
@@ -209,11 +393,15 @@ export default function Navbar() {
               : ""
           }`}
           aria-label={
-            mobileOpen ? "Cerrar menú" : "Abrir menú"
+            mobileOpen
+              ? "Cerrar menú"
+              : "Abrir menú"
           }
           aria-expanded={mobileOpen}
           aria-controls="cinematic-mobile-menu"
-          onClick={() => setMobileOpen((prev) => !prev)}
+          onClick={() =>
+            setMobileOpen((prev) => !prev)
+          }
         >
           <span />
           <span />
@@ -221,10 +409,13 @@ export default function Navbar() {
         </button>
       </div>
 
+      {/* MENÚ MÓVIL */}
       <nav
         id="cinematic-mobile-menu"
         className={`cinematic-nav__mobile ${
-          mobileOpen ? "cinematic-nav__mobile--open" : ""
+          mobileOpen
+            ? "cinematic-nav__mobile--open"
+            : ""
         }`}
         aria-label="Navegación móvil"
         inert={!mobileOpen}
@@ -257,14 +448,26 @@ export default function Navbar() {
           ACERCA DE
         </NavLink>
 
+        {/* DETECTOR EN MÓVIL */}
         {isAuthenticated && (
-          <a
-            href={PC_CHECKER_URL}
-            download="GAMERLIX_PC_Checker_v4.exe"
-            onClick={() => setMobileOpen(false)}
-          >
-            DETECTAR MI PC
-          </a>
+          <>
+            <a
+              href={PC_CHECKER_URL}
+              download="GAMERLIX_PC_Checker_v4.exe"
+              onClick={() => setMobileOpen(false)}
+            >
+              DESCARGAR DETECTOR DE PC
+            </a>
+
+            {hasPCData && (
+              <NavLink
+                to="/mi-pc"
+                onClick={() => setMobileOpen(false)}
+              >
+                DATOS DE MI PC
+              </NavLink>
+            )}
+          </>
         )}
 
         {isAdmin && (
@@ -277,7 +480,10 @@ export default function Navbar() {
         )}
 
         {isAuthenticated ? (
-          <button type="button" onClick={handleLogout}>
+          <button
+            type="button"
+            onClick={handleLogout}
+          >
             LOGOUT
           </button>
         ) : (
