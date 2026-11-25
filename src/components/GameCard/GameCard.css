@@ -1,7 +1,12 @@
+
 .game-card {
   overflow: hidden;
   border: 1px solid #27272a;
-  background: linear-gradient(155deg, rgba(24, 24, 27, 0.96), rgba(15, 15, 18, 0.98));
+  background: linear-gradient(
+    155deg,
+    rgba(24, 24, 27, 0.96),
+    rgba(15, 15, 18, 0.98)
+  );
   transition:
     border-color 0.28s ease,
     transform 0.28s ease,
@@ -11,7 +16,9 @@
 .game-card:hover {
   transform: translateY(-6px);
   border-color: rgba(239, 68, 68, 0.55);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35), 0 0 28px rgba(185, 28, 28, 0.08);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.35),
+    0 0 28px rgba(185, 28, 28, 0.08);
 }
 
 .game-card__artwork {
@@ -25,7 +32,11 @@
 .game-card__artwork::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(9, 9, 11, 0.82), transparent 58%);
+  background: linear-gradient(
+    0deg,
+    rgba(9, 9, 11, 0.82),
+    transparent 58%
+  );
   content: "";
   pointer-events: none;
 }
@@ -60,6 +71,106 @@
   backdrop-filter: blur(8px);
 }
 
+.game-card__upcoming-badge {
+  position: absolute;
+  z-index: 2;
+  top: 17px;
+  left: 17px;
+  padding: 8px 11px;
+  background: rgba(185, 28, 28, 0.92);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.game-card__reminder {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(185, 28, 28, 0.95);
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.game-card__reminder:hover {
+  background: #ef4444;
+  transform: scale(1.08);
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.55);
+}
+
+.game-card__reminder:hover svg,
+.game-card__reminder:focus-visible svg {
+  animation: game-card-bell-ring 0.6s ease-in-out;
+}
+
+.game-card__reminder-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: max-content;
+  max-width: 200px;
+  padding: 9px 11px;
+  background: rgba(9, 9, 11, 0.96);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-5px);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
+}
+
+.game-card__reminder:hover .game-card__reminder-tooltip,
+.game-card__reminder:focus-visible .game-card__reminder-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+@keyframes game-card-bell-ring {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  20% {
+    transform: rotate(18deg);
+  }
+
+  40% {
+    transform: rotate(-16deg);
+  }
+
+  60% {
+    transform: rotate(12deg);
+  }
+
+  80% {
+    transform: rotate(-8deg);
+  }
+}
+
 .game-card__content {
   padding: 20px 19px 18px;
 }
@@ -73,6 +184,13 @@
   letter-spacing: -0.025em;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.game-card__release-date {
+  margin: 9px 0 0;
+  color: #fca5a5;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .game-card__footer {
@@ -120,9 +238,24 @@
   transform: translate(2px, -2px);
 }
 
+.game-card__reminder:focus-visible,
+.game-card__link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.game-card__link:hover span {
+  transform: translate(2px, -2px);
+}
+
 @media (max-width: 640px) {
   .game-card__artwork {
     height: 235px;
+  }
+
+  .game-card__reminder {
+    width: 44px;
+    height: 44px;
   }
 }
 
@@ -130,7 +263,13 @@
   .game-card,
   .game-card__artwork img,
   .game-card__link,
-  .game-card__link span {
+  .game-card__link span,
+  .game-card__reminder,
+  .game-card__reminder-tooltip {
     transition-duration: 0.01ms;
+  }
+
+  .game-card__reminder svg {
+    animation: none !important;
   }
 }

@@ -3,10 +3,25 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Gamepad2, Save } from "lucide-react";
+import { ArrowLeft, Bell, CalendarDays, Gamepad2, Save } from "lucide-react";
 import { gameSchema } from "../../schemas/gameSchema";
 import type { GameFormData } from "../../schemas/gameSchema";
 import { gameService } from "../../services/gameService";
+import type { Game } from "../../interfaces/Game";
+
+function getFormValues(game?: Game): GameFormData {
+  return {
+    title: game?.title ?? "",
+    price: game?.price ?? 0,
+    category: game?.category ?? "",
+    image: game?.image ?? "",
+    description: game?.description ?? "",
+    requirements: game?.requirements ?? "",
+    developer: game?.developer ?? "",
+    status: game?.status ?? "released",
+    releaseDate: game?.releaseDate ?? "",
+  };
+}
 
 function GameForm() {
   const navigate = useNavigate();
@@ -21,45 +36,41 @@ function GameForm() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<GameFormData>({
     resolver: zodResolver(gameSchema),
-    defaultValues: {
-      title: existingGame?.title ?? "",
-      price: existingGame?.price ?? 0,
-      category: existingGame?.category ?? "",
-      image: existingGame?.image ?? "",
-      description: existingGame?.description ?? "",
-      requirements: existingGame?.requirements ?? "",
-      developer: existingGame?.developer ?? "",
-    },
+    defaultValues: getFormValues(existingGame),
   });
 
+  const selectedStatus = watch("status");
+  const isUpcoming = selectedStatus === "upcoming";
+
   useEffect(() => {
-    reset({
-      title: existingGame?.title ?? "",
-      price: existingGame?.price ?? 0,
-      category: existingGame?.category ?? "",
-      image: existingGame?.image ?? "",
-      description: existingGame?.description ?? "",
-      requirements: existingGame?.requirements ?? "",
-      developer: existingGame?.developer ?? "",
-    });
+    reset(getFormValues(existingGame));
   }, [id, reset]);
 
   function onSubmit(data: GameFormData) {
     setSaveError("");
 
+    const gameData: GameFormData = {
+      ...data,
+      releaseDate:
+        data.status === "upcoming"
+          ? data.releaseDate
+          : "",
+    };
+
     try {
       if (isEditing && id) {
-        const updatedGame = gameService.update(id, data);
+        const updatedGame = gameService.update(id, gameData);
 
         if (!updatedGame) {
           setSaveError("No se encontró el videojuego.");
           return;
         }
       } else {
-        gameService.create(data);
+        gameService.create(gameData);
       }
 
       navigate("/admin");
@@ -71,7 +82,9 @@ function GameForm() {
   }
 
   const inputClassName =
-    "w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none transition focus:border-red-500";
+    "w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500/30";
+
+  const errorClassName = "mt-2 text-sm text-red-400";
 
   if (isEditing && !existingGame) {
     return (
@@ -139,7 +152,7 @@ function GameForm() {
               />
 
               {errors.title && (
-                <p className="mt-2 text-sm text-red-400">
+                <p className={errorClassName}>
                   {errors.title.message}
                 </p>
               )}
@@ -164,7 +177,7 @@ function GameForm() {
                 />
 
                 {errors.price && (
-                  <p className="mt-2 text-sm text-red-400">
+                  <p className={errorClassName}>
                     {errors.price.message}
                   </p>
                 )}
@@ -187,7 +200,7 @@ function GameForm() {
                 />
 
                 {errors.category && (
-                  <p className="mt-2 text-sm text-red-400">
+                  <p className={errorClassName}>
                     {errors.category.message}
                   </p>
                 )}
@@ -211,9 +224,96 @@ function GameForm() {
               />
 
               {errors.image && (
-                <p className="mt-2 text-sm text-red-400">
+                <p className={errorClassName}>
                   {errors.image.message}
                 </p>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-red-900/40 bg-zinc-950/70 p-5 md:p-6">
+              <div className="mb-5 flex items-start gap-3">
+                <CalendarDays
+                  size={24}
+                  className="mt-0.5 shrink-0 text-red-500"
+                />
+
+                <div>
+                  <h2 className="font-semibold text-white">
+                    Información de lanzamiento
+                  </h2>
+
+                  <p className="mt-1 text-sm text-zinc-400">
+                    Configurá si el juego ya fue lanzado
+                    o si está próximo a estrenarse.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="status"
+                  className="mb-2 block text-sm font-medium"
+                >
+                  Estado del videojuego
+                </label>
+
+                <select
+                  id="status"
+                  {...register("status")}
+                  className={inputClassName}
+                >
+                  <option value="released">
+                    Lanzado
+                  </option>
+                  <option value="upcoming">
+                    Próximamente
+                  </option>
+                </select>
+
+                {errors.status && (
+                  <p className={errorClassName}>
+                    {errors.status.message}
+                  </p>
+                )}
+              </div>
+
+              {isUpcoming && (
+                <div className="mt-5">
+                  <label
+                    htmlFor="releaseDate"
+                    className="mb-2 block text-sm font-medium"
+                  >
+                    Fecha de lanzamiento
+                  </label>
+
+                  <input
+                    id="releaseDate"
+                    type="date"
+                    {...register("releaseDate")}
+                    className={inputClassName}
+                    aria-invalid={Boolean(errors.releaseDate)}
+                  />
+
+                  {errors.releaseDate && (
+                    <p className={errorClassName}>
+                      {errors.releaseDate.message}
+                    </p>
+                  )}
+
+                  <div className="mt-4 flex items-start gap-2 rounded-lg border border-red-900/30 bg-red-950/20 p-3">
+                    <Bell
+                      size={18}
+                      className="mt-0.5 shrink-0 text-red-400"
+                    />
+
+                    <p className="text-sm leading-relaxed text-zinc-300">
+                      Este videojuego podrá mostrar una
+                      campanita para que los usuarios
+                      agreguen un recordatorio de lanzamiento
+                      a Google Calendar.
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -234,7 +334,7 @@ function GameForm() {
               />
 
               {errors.description && (
-                <p className="mt-2 text-sm text-red-400">
+                <p className={errorClassName}>
                   {errors.description.message}
                 </p>
               )}
@@ -257,7 +357,7 @@ function GameForm() {
               />
 
               {errors.requirements && (
-                <p className="mt-2 text-sm text-red-400">
+                <p className={errorClassName}>
                   {errors.requirements.message}
                 </p>
               )}
@@ -280,14 +380,14 @@ function GameForm() {
               />
 
               {errors.developer && (
-                <p className="mt-2 text-sm text-red-400">
+                <p className={errorClassName}>
                   {errors.developer.message}
                 </p>
               )}
             </div>
 
             {saveError && (
-              <p role="alert" className="text-sm text-red-400">
+              <p role="alert" className={errorClassName}>
                 {saveError}
               </p>
             )}
