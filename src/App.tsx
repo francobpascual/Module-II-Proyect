@@ -13,6 +13,7 @@ import AdminPage from "./pages/AdminPage/AdminPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Footer from "./components/Footer/footer";
 import GameForm from "./components/GameForm/GameForm";
+import UpcomingPage from "./pages/UpcomingPage/UpcomingPage";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
             path="/admin/games/edit/:id"
             element={<GameForm />}
           />
+          <Route path="/upcoming" element={<UpcomingPage />} />
         </Route>
       </Routes>
 

@@ -7,4 +7,6 @@ export interface Game {
   description: string;
   requirements: string;
   developer: string;
+  releaseDate?: string;
+  status?: "released" | "upcoming";
 }
