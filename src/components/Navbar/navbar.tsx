@@ -1,10 +1,14 @@
+
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import "./navbar.css";
 
+const PC_CHECKER_URL = "/downloads/GAMERLIX_PC_Checker_v4.exe";
+
 export default function Navbar() {
   const { isAuthenticated, isAdmin, logout } = useAuth();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -70,7 +74,9 @@ export default function Navbar() {
   };
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
-    `cinematic-nav__link ${isActive ? "cinematic-nav__link--active" : ""}`;
+    `cinematic-nav__link ${
+      isActive ? "cinematic-nav__link--active" : ""
+    }`;
 
   return (
     <header
@@ -87,7 +93,9 @@ export default function Navbar() {
           aria-label="Gamerlix - Inicio"
         >
           <span className="cinematic-nav__symbol">X</span>
-          <span className="cinematic-nav__brand-name">GAMERLIX</span>
+          <span className="cinematic-nav__brand-name">
+            GAMERLIX
+          </span>
         </Link>
 
         <nav
@@ -115,7 +123,11 @@ export default function Navbar() {
               aria-controls="cinematic-shop-menu"
             >
               TIENDA
-              <span className="cinematic-nav__chevron" aria-hidden="true">
+
+              <span
+                className="cinematic-nav__chevron"
+                aria-hidden="true"
+              >
                 ▾
               </span>
             </button>
@@ -123,7 +135,9 @@ export default function Navbar() {
             <div
               id="cinematic-shop-menu"
               className={`cinematic-nav__dropdown-menu ${
-                shopOpen ? "cinematic-nav__dropdown-menu--open" : ""
+                shopOpen
+                  ? "cinematic-nav__dropdown-menu--open"
+                  : ""
               }`}
               aria-hidden={!shopOpen}
               inert={!shopOpen}
@@ -149,6 +163,17 @@ export default function Navbar() {
           <NavLink to="/about" className={navClass}>
             ACERCA DE
           </NavLink>
+
+          {isAuthenticated && (
+            <a
+              href={PC_CHECKER_URL}
+              download="GAMERLIX_PC_Checker_v4.exe"
+              className="cinematic-nav__link"
+              title="Descargar el detector de hardware de GAMERLIX"
+            >
+              DETECTAR MI PC
+            </a>
+          )}
 
           {isAdmin && (
             <NavLink to="/admin" className={navClass}>
@@ -179,9 +204,13 @@ export default function Navbar() {
         <button
           type="button"
           className={`cinematic-nav__mobile-toggle ${
-            mobileOpen ? "cinematic-nav__mobile-toggle--open" : ""
+            mobileOpen
+              ? "cinematic-nav__mobile-toggle--open"
+              : ""
           }`}
-          aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-label={
+            mobileOpen ? "Cerrar menú" : "Abrir menú"
+          }
           aria-expanded={mobileOpen}
           aria-controls="cinematic-mobile-menu"
           onClick={() => setMobileOpen((prev) => !prev)}
@@ -200,7 +229,10 @@ export default function Navbar() {
         aria-label="Navegación móvil"
         inert={!mobileOpen}
       >
-        <NavLink to="/" onClick={() => setMobileOpen(false)}>
+        <NavLink
+          to="/"
+          onClick={() => setMobileOpen(false)}
+        >
           INICIO
         </NavLink>
 
@@ -224,6 +256,16 @@ export default function Navbar() {
         >
           ACERCA DE
         </NavLink>
+
+        {isAuthenticated && (
+          <a
+            href={PC_CHECKER_URL}
+            download="GAMERLIX_PC_Checker_v4.exe"
+            onClick={() => setMobileOpen(false)}
+          >
+            DETECTAR MI PC
+          </a>
+        )}
 
         {isAdmin && (
           <NavLink
