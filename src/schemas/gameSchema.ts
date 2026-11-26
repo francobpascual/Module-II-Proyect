@@ -26,6 +26,37 @@ function getTodayLocal(): string {
   return `${year}-${month}-${day}`;
 }
 
+const hardwareRequirementsSchema = z.object({
+  cpu: z
+    .string()
+    .trim()
+    .min(2, "Ingresá el procesador requerido"),
+
+  gpu: z
+    .string()
+    .trim()
+    .min(2, "Ingresá la placa de video requerida"),
+
+  ramGB: z
+    .number({
+      error: "Ingresá una cantidad válida de RAM",
+    })
+    .positive("La RAM debe ser mayor a cero")
+    .max(1024, "Revisá la cantidad de RAM"),
+
+  storageGB: z
+    .number({
+      error: "Ingresá el espacio requerido",
+    })
+    .positive("El almacenamiento debe ser mayor a cero")
+    .max(100000, "Revisá el almacenamiento"),
+
+  os: z
+    .string()
+    .trim()
+    .min(2, "Ingresá el sistema operativo requerido"),
+});
+
 export const gameSchema = z
   .object({
     title: z
@@ -70,6 +101,13 @@ export const gameSchema = z
     }),
 
     releaseDate: z.string().optional(),
+
+    systemRequirements: z
+      .object({
+        minimum: hardwareRequirementsSchema,
+        recommended: hardwareRequirementsSchema.optional(),
+      })
+      .optional(),
   })
   .superRefine((data, ctx) => {
     if (data.status !== "upcoming") {
