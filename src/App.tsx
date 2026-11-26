@@ -16,6 +16,8 @@ import GameForm from "./components/GameForm/GameForm";
 import UpcomingPage from "./pages/UpcomingPage/UpcomingPage";
 import PCProfileBridge from "./components/PCProfileBridge/PCProfileBridge";
 import MyPCPage from "./pages/MyPCPage/MyPCPage";
+import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage/OrderSuccessPage";
 
 
 function App() {
@@ -34,6 +36,9 @@ function App() {
           <Route path="/upcoming" element={<UpcomingPage />} />
           <Route path="/mi-pc" element={<MyPCPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-success" element={<OrderSuccessPage />}
+/>
         </Route>
       </Routes>
 
