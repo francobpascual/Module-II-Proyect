@@ -1,7 +1,8 @@
-
-import { Bell } from "lucide-react";
-import { Link } from "react-router";
+import { Bell, Check, ShoppingCart } from "lucide-react";
+import { Link, useNavigate } from "react-router";
 import type { Game } from "../../interfaces/Game";
+import { useAuth } from "../../hooks/useAuth";
+import { useCart } from "../../hooks/useCart";
 import "./GameCard.css";
 
 interface GameCardProps {
@@ -37,7 +38,6 @@ function isValidFutureDate(value?: string): value is string {
 
 function formatReleaseDate(value: string): string {
   const [year, month, day] = value.split("-");
-
   return `${day}/${month}/${year}`;
 }
 
@@ -70,7 +70,12 @@ function createCalendarLink(
 }
 
 function GameCard({ game }: GameCardProps) {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { addToCart, isInCart } = useCart();
+
   const isUpcoming = game.status === "upcoming";
+  const alreadyInCart = isInCart(game.id);
 
   const canSetReminder =
     isUpcoming && isValidFutureDate(game.releaseDate);
@@ -80,10 +85,29 @@ function GameCard({ game }: GameCardProps) {
       ? createCalendarLink(game.title, game.releaseDate)
       : null;
 
+  function handleAddToCart() {
+    if (isUpcoming || alreadyInCart) return;
+
+    if (!isAuthenticated) {
+      navigate("/login", {
+        state: {
+          from: `/detail/${game.id}`,
+        },
+      });
+      return;
+    }
+
+    addToCart(game);
+  }
+
   return (
     <article className="game-card">
       <div className="game-card__artwork">
-        <img src={game.image} alt={game.title} loading="lazy" />
+        <img
+          src={game.image}
+          alt={game.title}
+          loading="lazy"
+        />
 
         {isUpcoming && (
           <span className="game-card__upcoming-badge">
@@ -101,6 +125,7 @@ function GameCard({ game }: GameCardProps) {
             title="Recordarme el lanzamiento"
           >
             <Bell size={21} strokeWidth={2} />
+
             <span className="game-card__reminder-tooltip">
               Recordarme el lanzamiento
             </span>
@@ -136,6 +161,34 @@ function GameCard({ game }: GameCardProps) {
             <span aria-hidden="true">↗</span>
           </Link>
         </div>
+
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          disabled={isUpcoming || alreadyInCart}
+          className={`game-card__cart-button ${
+            alreadyInCart
+              ? "game-card__cart-button--added"
+              : ""
+          }`}
+        >
+          {alreadyInCart ? (
+            <>
+              <Check size={18} />
+              EN EL CARRITO
+            </>
+          ) : isUpcoming ? (
+            <>
+              <Bell size={18} />
+              PRÓXIMAMENTE
+            </>
+          ) : (
+            <>
+              <ShoppingCart size={18} />
+              AÑADIR AL CARRITO
+            </>
+          )}
+        </button>
       </div>
     </article>
   );

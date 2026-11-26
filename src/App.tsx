@@ -4,7 +4,7 @@ import {
   Routes,
   Route,
 } from "react-router";
-
+import CartPage from "./pages/CartPage/CartPage";
 import HomePage from "./pages/HomePage/HomePage";
 import GameDetailPage from "./pages/GameDetailPage/GameDetailPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -16,6 +16,7 @@ import GameForm from "./components/GameForm/GameForm";
 import UpcomingPage from "./pages/UpcomingPage/UpcomingPage";
 import PCProfileBridge from "./components/PCProfileBridge/PCProfileBridge";
 import MyPCPage from "./pages/MyPCPage/MyPCPage";
+
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/admin/games/edit/:id" element={<GameForm />}/>
           <Route path="/upcoming" element={<UpcomingPage />} />
           <Route path="/mi-pc" element={<MyPCPage />} />
+          <Route path="/cart" element={<CartPage />} />
         </Route>
       </Routes>
 

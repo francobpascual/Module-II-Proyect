@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -6,7 +5,9 @@ import {
   useLocation,
   useNavigate,
 } from "react-router";
+import { ShoppingCart } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { useCart } from "../../hooks/useCart";
 import { pcStorageKey } from "../PCProfileBridge/PCProfileBridge";
 import "./navbar.css";
 
@@ -48,6 +49,8 @@ export default function Navbar() {
     isAdmin,
     logout,
   } = useAuth();
+
+  const { cartCount } = useCart();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -225,7 +228,10 @@ export default function Navbar() {
           <div
             ref={shopRef}
             className="cinematic-nav__dropdown"
-            onMouseEnter={() => setShopOpen(true)}
+            onMouseEnter={() => {
+              setShopOpen(true);
+              setPcOpen(false);
+            }}
             onMouseLeave={() => setShopOpen(false)}
           >
             <button
@@ -293,7 +299,10 @@ export default function Navbar() {
             <div
               ref={pcRef}
               className="cinematic-nav__dropdown"
-              onMouseEnter={() => setPcOpen(true)}
+              onMouseEnter={() => {
+                setPcOpen(true);
+                setShopOpen(false);
+              }}
               onMouseLeave={() => setPcOpen(false)}
             >
               <button
@@ -353,7 +362,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* ADMINISTRADOR */}
           {isAdmin && (
             <NavLink
               to="/admin"
@@ -364,8 +372,29 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* SESIÓN */}
+        {/* CARRITO Y SESIÓN */}
         <div className="cinematic-nav__actions">
+          {isAuthenticated && (
+            <Link
+              to="/cart"
+              className="cinematic-nav__cart"
+              aria-label={`Ver carrito: ${cartCount} videojuegos`}
+              title="Ver mi carrito"
+            >
+              <ShoppingCart
+                size={23}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
+
+              {cartCount > 0 && (
+                <span className="cinematic-nav__cart-count">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
+            </Link>
+          )}
+
           {isAuthenticated ? (
             <button
               type="button"
@@ -476,6 +505,16 @@ export default function Navbar() {
             onClick={() => setMobileOpen(false)}
           >
             PANEL ADMINISTRATIVO
+          </NavLink>
+        )}
+
+        {/* CARRITO MÓVIL */}
+        {isAuthenticated && (
+          <NavLink
+            to="/cart"
+            onClick={() => setMobileOpen(false)}
+          >
+            MI CARRITO ({cartCount})
           </NavLink>
         )}
 
