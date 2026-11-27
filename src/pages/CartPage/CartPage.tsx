@@ -50,7 +50,7 @@ export default function CartPage() {
           SEGUIR COMPRANDO
         </Link>
 
-        <div className="cart-page__heading">
+        <div className="cart-page__heading" data-reveal>
           <h1>MI CARRITO</h1>
 
           <p>
@@ -76,7 +76,7 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div className="cart-page__layout">
+          <div className="cart-page__layout" data-reveal>
             <section className="cart-page__products">
               <div className="cart-page__section-header">
                 <h2>

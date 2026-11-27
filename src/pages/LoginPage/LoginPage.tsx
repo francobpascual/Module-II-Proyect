@@ -45,7 +45,10 @@ function LoginPage() {
 
   return (
     <main className="flex min-h-[80vh] items-center justify-center bg-zinc-950 px-4 py-12 text-white">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
+      <div
+        className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl"
+        data-reveal
+      >
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-600/10 text-red-500">
             <LogIn size={28} />

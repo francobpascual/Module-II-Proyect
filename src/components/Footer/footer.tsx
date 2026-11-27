@@ -1,9 +1,10 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
+import { MapPin, X } from "lucide-react";
+import InteractiveBackground from "../InteractiveBackground/InteractiveBackground";
 import "./footer.css";
 
-type Language = "es" | "en";
 type SocialPlatform = "instagram" | "facebook" | "youtube" | "github";
 
 const socialLinks: {
@@ -90,84 +91,82 @@ function SocialIcon({ name }: { name: SocialPlatform }) {
   }
 }
 
-const translations = {
-  es: {
-    description: "Tu próxima aventura comienza acá.",
-    navigation: "EXPLORAR",
-    home: "Inicio",
-    store: "Tienda de juegos",
-    about: "Acerca de",
-    community: "SEGUINOS",
-    language: "IDIOMA",
-    rights: "Todos los derechos reservados.",
-    made: "Diseñado para jugadores.",
-  },
-  en: {
-    description: "Your next adventure starts here.",
-    navigation: "EXPLORE",
-    home: "Home",
-    store: "Game store",
-    about: "About us",
-    community: "FOLLOW US",
-    language: "LANGUAGE",
-    rights: "All rights reserved.",
-    made: "Designed for gamers.",
-  },
-};
-
 export default function Footer() {
-  const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem("site-language");
-    return saved === "en" ? "en" : "es";
-  });
-
-  const t = translations[language];
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const mapDialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    document.documentElement.lang = language;
-    localStorage.setItem("site-language", language);
-    window.dispatchEvent(
-      new CustomEvent("site-language-change", {
-        detail: { language },
-      })
-    );
-  }, [language]);
+    const dialog = mapDialogRef.current;
+
+    if (!dialog) return;
+
+    if (isMapOpen && !dialog.open) {
+      dialog.showModal();
+    } else if (!isMapOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isMapOpen]);
 
   return (
     <footer className="cinematic-footer">
+      <InteractiveBackground />
       <div className="cinematic-footer__glow" aria-hidden="true" />
 
       <div className="cinematic-footer__container">
         <div className="cinematic-footer__main">
-          <div className="cinematic-footer__brand-area">
+          <div className="cinematic-footer__brand-area" data-reveal>
             <Link to="/" className="cinematic-footer__brand">
               <span className="cinematic-footer__symbol">X</span>
               <span>GAMERLIX</span>
             </Link>
 
             <p className="cinematic-footer__description">
-              {t.description}
+              Tu próxima aventura comienza acá. Encontrá tu siguiente mundo
+              para explorar.
             </p>
           </div>
 
-          <div className="cinematic-footer__links-area">
+          <div className="cinematic-footer__links-area" data-reveal>
             <h3 className="cinematic-footer__heading">
-              {t.navigation}
+              EXPLORAR
             </h3>
 
             <nav
               className="cinematic-footer__links"
-              aria-label={t.navigation}
+              aria-label="Explorar GAMERLIX"
             >
-              <Link to="/">{t.home}</Link>
-              <a href="/#catalogo">{t.store}</a>
-              <Link to="/about">{t.about}</Link>
+              <Link to="/">Inicio</Link>
+              <Link to="/#catalogo">Catálogo</Link>
+              <Link to="/upcoming">Próximos lanzamientos</Link>
+              <Link to="/#ubicacion">Ubicación</Link>
             </nav>
           </div>
 
-          <div className="cinematic-footer__social-area">
+          <section
+            id="ubicacion"
+            className="cinematic-footer__location-area"
+            aria-labelledby="footer-location-heading"
+            data-reveal
+          >
+            <h3
+              id="footer-location-heading"
+              className="cinematic-footer__heading"
+            >
+              ¿DÓNDE ENCONTRARNOS?
+            </h3>
+            <button
+              type="button"
+              className="cinematic-footer__directions"
+              onClick={() => setIsMapOpen(true)}
+            >
+              CÓMO LLEGAR
+              <MapPin size={15} aria-hidden="true" />
+            </button>
+          </section>
+
+          <div className="cinematic-footer__social-area" data-reveal>
             <h3 className="cinematic-footer__heading">
-              {t.community}
+              CONECTÁ CON GAMERLIX
             </h3>
 
             <div className="cinematic-footer__social-links">
@@ -186,26 +185,32 @@ export default function Footer() {
               ))}
             </div>
 
-            <div className="cinematic-footer__language-area">
-              <label
-                htmlFor="footer-language"
-                className="cinematic-footer__language-label"
+            <a
+              href="https://wa.me/5493813654038"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cinematic-footer__whatsapp"
+              aria-label="Contactar a GAMERLIX por WhatsApp al +54 9 381 365 4038"
+              title="Contactar por WhatsApp"
+            >
+              <svg
+                viewBox="0 0 32 32"
+                role="img"
+                aria-hidden="true"
               >
-                {t.language}
-              </label>
-
-              <select
-                id="footer-language"
-                value={language}
-                onChange={(e) =>
-                  setLanguage(e.target.value as Language)
-                }
-                className="cinematic-footer__language-select"
-              >
-                <option value="es">Español</option>
-                <option value="en">English</option>
-              </select>
-            </div>
+                <path
+                  d="M16 3.2a12.3 12.3 0 0 0-10.5 18.7L4 28l6.3-1.6A12.3 12.3 0 1 0 16 3.2Z"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12.1 10.1c-.3-.7-.6-.7-.9-.7h-.8c-.3 0-.7.1-1 .5-.4.4-1.3 1.3-1.3 3.1s1.3 3.5 1.5 3.8c.2.2 2.6 4.1 6.4 5.6 3.2 1.2 3.8.9 4.5.8.7-.1 2.2-.9 2.5-1.8.3-.9.3-1.6.2-1.8-.1-.2-.4-.3-.9-.6-.5-.2-2.2-1.1-2.6-1.2-.4-.1-.6-.2-.9.2-.3.5-1 1.2-1.2 1.5-.2.3-.5.3-.9.1-.5-.2-1.8-.7-3.4-2.2-1.2-1.1-2.1-2.5-2.3-2.9-.2-.4 0-.6.2-.8.2-.2.4-.5.7-.8.2-.3.3-.5.5-.8.1-.3 0-.6 0-.8-.1-.2-.8-1.9-1.1-2.6Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </a>
           </div>
         </div>
 
@@ -213,12 +218,61 @@ export default function Footer() {
           <p>
             © {new Date().getFullYear()} GAMERLIX.
             {" "}
-            {t.rights}
+            Todos los derechos reservados.
           </p>
 
-          <p>{t.made}</p>
+          <p>Diseñado para jugadores.</p>
         </div>
       </div>
+
+      <dialog
+        ref={mapDialogRef}
+        className="cinematic-footer__map-dialog"
+        aria-labelledby="footer-map-title"
+        onClose={() => setIsMapOpen(false)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            setIsMapOpen(false);
+          }
+        }}
+      >
+        <div className="cinematic-footer__map-dialog-content">
+          <div className="cinematic-footer__map-dialog-header">
+            <div>
+              <h2
+                id="footer-map-title"
+                className="cinematic-footer__map-dialog-title"
+              >
+                ¿DÓNDE ENCONTRARNOS?
+              </h2>
+              <p className="cinematic-footer__address">
+                <MapPin size={18} aria-hidden="true" />
+                <span>
+                  RollingCode School, General Paz 570, Barrio Sur,
+                  San Miguel de Tucumán, Tucumán
+                </span>
+              </p>
+            </div>
+            <button
+              type="button"
+              className="cinematic-footer__map-close"
+              aria-label="Cerrar mapa"
+              onClick={() => setIsMapOpen(false)}
+            >
+              <X size={20} aria-hidden="true" />
+            </button>
+          </div>
+          <div className="cinematic-footer__map">
+            <iframe
+              title="Mapa de RollingCode School, San Miguel de Tucumán"
+              src="https://maps.google.com/maps?q=-26.8365833%2C-65.207167&z=17&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </dialog>
     </footer>
   );
 }

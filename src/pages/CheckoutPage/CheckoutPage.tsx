@@ -136,7 +136,7 @@ export default function CheckoutPage() {
           VOLVER AL CARRITO
         </Link>
 
-        <header className="checkout-page__heading">
+        <header className="checkout-page__heading" data-reveal>
           <span className="checkout-page__eyebrow">
             GAMERLIX / CHECKOUT
           </span>
@@ -161,7 +161,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <div className="checkout-page__layout">
+        <div className="checkout-page__layout" data-reveal>
           <section className="checkout-page__panel">
             <div className="checkout-page__panel-heading">
               <div>

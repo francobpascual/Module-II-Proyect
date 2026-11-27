@@ -101,7 +101,7 @@ function GameCard({ game }: GameCardProps) {
   }
 
   return (
-    <article className="game-card">
+    <article className="game-card" data-reveal>
       <div className="game-card__artwork">
         <img
           src={game.image}

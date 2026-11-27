@@ -11,7 +11,7 @@ function AdminPage() {
   return (
     <main className="min-h-[80vh] bg-zinc-950 px-6 py-12 text-white">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex items-center gap-4">
+        <div className="mb-8 flex items-center gap-4" data-reveal>
           <div className="rounded-xl bg-red-600/10 p-4 text-red-500">
             <ShieldCheck size={32} />
           </div>
@@ -27,7 +27,10 @@ function AdminPage() {
           </div>
         </div>
 
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+        <section
+          className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
+          data-reveal
+        >
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Gamepad2 className="text-red-500" size={26} />

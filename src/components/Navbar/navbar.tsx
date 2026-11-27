@@ -5,7 +5,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Sun } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 import { pcStorageKey } from "../PCProfileBridge/PCProfileBridge";
@@ -50,7 +50,7 @@ export default function Navbar() {
     logout,
   } = useAuth();
 
-  const { cartCount } = useCart();
+  const { cartCount, cartTotal } = useCart();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,6 +59,11 @@ export default function Navbar() {
   const [shopOpen, setShopOpen] = useState(false);
   const [pcOpen, setPcOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(() =>
+    localStorage.getItem("gamerlix-theme") === "light"
+      ? "light"
+      : "dark"
+  );
 
   const [hasPCData, setHasPCData] = useState(() =>
     hasSavedPCProfile(currentUser?.id)
@@ -68,6 +73,11 @@ export default function Navbar() {
   const pcRef = useRef<HTMLDivElement>(null);
 
   const isHome = location.pathname === "/";
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("gamerlix-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -198,19 +208,38 @@ export default function Navbar() {
       ].join(" ")}
     >
       <div className="cinematic-nav__container">
-        <Link
-          to="/"
-          className="cinematic-nav__brand"
-          aria-label="Gamerlix - Inicio"
-        >
-          <span className="cinematic-nav__symbol">
-            X
-          </span>
+        <div className="cinematic-nav__brand-group">
+          <Link
+            to="/"
+            className="cinematic-nav__brand"
+            aria-label="Gamerlix - Inicio"
+          >
+            <span className="cinematic-nav__symbol">
+              X
+            </span>
 
-          <span className="cinematic-nav__brand-name">
-            GAMERLIX
-          </span>
-        </Link>
+            <span className="cinematic-nav__brand-name">
+              GAMERLIX
+            </span>
+          </Link>
+          <button
+            type="button"
+            className="cinematic-nav__theme-toggle"
+            onClick={() =>
+              setTheme((current) =>
+                current === "dark" ? "light" : "dark"
+              )
+            }
+            aria-label={
+              theme === "dark"
+                ? "Activar modo claro"
+                : "Activar modo oscuro"
+            }
+            aria-pressed={theme === "light"}
+          >
+            <Sun size={19} aria-hidden="true" />
+          </button>
+        </div>
 
         <nav
           className="cinematic-nav__desktop"
@@ -287,12 +316,12 @@ export default function Navbar() {
             </div>
           </div>
 
-          <NavLink
-            to="/about"
-            className={navClass}
+          <Link
+            to="/#ubicacion"
+            className="cinematic-nav__link"
           >
             ACERCA DE
-          </NavLink>
+          </Link>
 
           {/* DETECTAR MI PC */}
           {isAuthenticated && (
@@ -378,20 +407,25 @@ export default function Navbar() {
             <Link
               to="/cart"
               className="cinematic-nav__cart"
-              aria-label={`Ver carrito: ${cartCount} videojuegos`}
+              aria-label={`Ver carrito: ${cartCount} videojuegos, total $${cartTotal.toLocaleString("es-AR")}`}
               title="Ver mi carrito"
             >
-              <ShoppingCart
-                size={23}
-                strokeWidth={1.8}
-                aria-hidden="true"
-              />
+              <span className="cinematic-nav__cart-icon">
+                <ShoppingCart
+                  size={23}
+                  strokeWidth={1.8}
+                  aria-hidden="true"
+                />
 
-              {cartCount > 0 && (
-                <span className="cinematic-nav__cart-count">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
+                {cartCount > 0 && (
+                  <span className="cinematic-nav__cart-count">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </span>
+              <span className="cinematic-nav__cart-total">
+                ${cartTotal.toLocaleString("es-AR")}
+              </span>
             </Link>
           )}
 
@@ -470,12 +504,12 @@ export default function Navbar() {
           PRÓXIMOS LANZAMIENTOS
         </Link>
 
-        <NavLink
-          to="/about"
+        <Link
+          to="/#ubicacion"
           onClick={() => setMobileOpen(false)}
         >
           ACERCA DE
-        </NavLink>
+        </Link>
 
         {/* DETECTOR EN MÓVIL */}
         {isAuthenticated && (
@@ -514,7 +548,7 @@ export default function Navbar() {
             to="/cart"
             onClick={() => setMobileOpen(false)}
           >
-            MI CARRITO ({cartCount})
+            MI CARRITO ({cartCount}) · ${cartTotal.toLocaleString("es-AR")}
           </NavLink>
         )}
 
