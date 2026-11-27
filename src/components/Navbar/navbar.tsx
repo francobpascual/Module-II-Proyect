@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 import {
   Link,
   NavLink,
@@ -42,6 +47,21 @@ function hasSavedPCProfile(userId?: string): boolean {
   }
 }
 
+function scrollToCatalog(): void {
+  const catalog = document.getElementById("catalogo");
+
+  if (!catalog) return;
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  catalog.scrollIntoView({
+    behavior: prefersReducedMotion ? "auto" : "smooth",
+    block: "start",
+  });
+}
+
 export default function Navbar() {
   const {
     currentUser,
@@ -73,6 +93,16 @@ export default function Navbar() {
   const pcRef = useRef<HTMLDivElement>(null);
 
   const isHome = location.pathname === "/";
+
+  useEffect(() => {
+    if (location.pathname !== "/" || location.hash !== "#catalogo") {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(scrollToCatalog, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [location.hash, location.pathname]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -197,6 +227,33 @@ export default function Navbar() {
       isActive ? "cinematic-nav__link--active" : ""
     }`;
 
+  const handleCatalogClick = (
+    event: ReactMouseEvent<HTMLAnchorElement>
+  ) => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (isHome) {
+      if (location.hash !== "#catalogo") {
+        navigate("/#catalogo");
+      }
+
+      scrollToCatalog();
+      return;
+    }
+
+    navigate("/#catalogo");
+  };
+
   return (
     <header
       className={[
@@ -271,7 +328,7 @@ export default function Navbar() {
                   : ""
               }`}
               onClick={() => {
-                setShopOpen((prev) => !prev);
+                setShopOpen(true);
                 setPcOpen(false);
               }}
               aria-expanded={shopOpen}
@@ -301,7 +358,10 @@ export default function Navbar() {
               <Link
                 to="/#catalogo"
                 className="cinematic-nav__dropdown-item"
-                onClick={() => setShopOpen(false)}
+                onClick={(event) => {
+                  setShopOpen(false);
+                  handleCatalogClick(event);
+                }}
               >
                 LISTA DE JUEGOS
               </Link>
@@ -492,7 +552,10 @@ export default function Navbar() {
 
         <Link
           to="/#catalogo"
-          onClick={() => setMobileOpen(false)}
+          onClick={(event) => {
+            setMobileOpen(false);
+            handleCatalogClick(event);
+          }}
         >
           LISTA DE JUEGOS
         </Link>

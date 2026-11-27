@@ -1,8 +1,13 @@
+import { lazy, Suspense } from "react";
 import { Link } from "react-router";
 import { ShieldCheck, Gamepad2, Plus } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useGames } from "../../hooks/useGames";
 import AdminGameTable from "../../components/AdminGameTable/AdminGameTable";
+
+const AdminUserManagement = lazy(
+  () => import("../../components/AdminUserManagement/AdminUserManagement")
+);
 
 function AdminPage() {
   const { currentUser } = useAuth();
@@ -26,6 +31,16 @@ function AdminPage() {
             </p>
           </div>
         </div>
+
+        <Suspense
+          fallback={
+            <div className="mb-8 rounded-xl border border-zinc-800 bg-zinc-900 p-6 text-zinc-400">
+              Cargando gestión de usuarios...
+            </div>
+          }
+        >
+          <AdminUserManagement />
+        </Suspense>
 
         <section
           className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
