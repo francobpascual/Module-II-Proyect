@@ -407,8 +407,8 @@ function GameDetailPage() {
               </p>
 
               <a
-                href="/downloads/GAMERLIX_PC_Checker_v4.exe"
-                download="GAMERLIX_PC_Checker_v4.exe"
+                href="/downloads/GAMERLIX_PC_Checker_v5.exe"
+                download="GAMERLIX_PC_Checker_v5.exe"
                 className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-3 text-sm font-bold transition hover:bg-red-700"
               >
                 DESCARGAR DETECTOR

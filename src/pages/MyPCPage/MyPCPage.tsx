@@ -17,7 +17,7 @@ import {
 } from "../../components/PCProfileBridge/PCProfileBridge";
 
 const CHECKER_URL =
-  "/downloads/GAMERLIX_PC_Checker_v4.exe";
+  "/downloads/GAMERLIX_PC_Checker_v5.exe";
 
 function readPCProfile(userId: string): PCSpecs | null {
   try {
@@ -136,7 +136,7 @@ function MyPCPage() {
 
             <a
               href={CHECKER_URL}
-              download="GAMERLIX_PC_Checker_v4.exe"
+              download="GAMERLIX_PC_Checker_v5.exe"
               className="mt-7 inline-flex items-center gap-2 rounded-lg bg-red-600 px-6 py-3 font-semibold transition hover:bg-red-700"
             >
               <RefreshCw size={18} />
@@ -159,7 +159,7 @@ function MyPCPage() {
 
               <a
                 href={CHECKER_URL}
-                download="GAMERLIX_PC_Checker_v4.exe"
+                download="GAMERLIX_PC_Checker_v5.exe"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-white transition hover:text-red-400"
               >
                 <RefreshCw size={16} />

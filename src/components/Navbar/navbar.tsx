@@ -12,7 +12,7 @@ import { pcStorageKey } from "../PCProfileBridge/PCProfileBridge";
 import "./navbar.css";
 
 const PC_CHECKER_URL =
-  "/downloads/GAMERLIX_PC_Checker_v4.exe";
+ "/downloads/GAMERLIX_PC_Checker_v5.exe";
 
 function hasSavedPCProfile(userId?: string): boolean {
   if (!userId) return false;
@@ -371,7 +371,7 @@ export default function Navbar() {
               >
                 <a
                   href={PC_CHECKER_URL}
-                  download="GAMERLIX_PC_Checker_v4.exe"
+                  download="GAMERLIX_PC_Checker_v5.exe"
                   className="cinematic-nav__dropdown-item"
                   onClick={() => setPcOpen(false)}
                 >
@@ -516,7 +516,7 @@ export default function Navbar() {
           <>
             <a
               href={PC_CHECKER_URL}
-              download="GAMERLIX_PC_Checker_v4.exe"
+              download="GAMERLIX_PC_Checker_v5.exe"
               onClick={() => setMobileOpen(false)}
             >
               DESCARGAR DETECTOR DE PC

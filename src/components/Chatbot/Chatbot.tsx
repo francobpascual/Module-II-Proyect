@@ -57,7 +57,7 @@ const chatAnswers: Record<ChatTopic, ChatAnswer> = {
       "El detector está disponible para Windows. Descargalo y ejecutalo; luego iniciá sesión para vincular los datos detectados a tu perfil.",
     action: {
       label: "Descargar detector",
-      href: "/downloads/GAMERLIX_PC_Checker_v4.exe",
+      href: "/downloads/GAMERLIX_PC_Checker_v5.exe",
       download: true,
     },
   },
