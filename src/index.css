@@ -387,27 +387,43 @@ html[data-theme="light"] .gamer-chat__options button {
   color: var(--primary-text);
 }
 
-html[data-theme="light"] .gamer-chat__bubble--bot,
+html[data-theme="light"] .gamer-chat__message--assistant .gamer-chat__bubble,
 html[data-theme="light"] .gamer-chat__options button {
   border-color: var(--surface-border);
   background: #f4f4f5;
 }
 
-html[data-theme="light"] .gamer-chat__bubble--bot,
+html[data-theme="light"] .gamer-chat__message--assistant .gamer-chat__bubble,
 html[data-theme="light"] .gamer-chat__heading p,
 html[data-theme="light"] .gamer-chat__footer,
-html[data-theme="light"] .gamer-chat__back {
+html[data-theme="light"] .gamer-chat__disclaimer {
   color: var(--secondary-text);
 }
 
-html[data-theme="light"] .gamer-chat__close {
+html[data-theme="light"] .gamer-chat__close,
+html[data-theme="light"] .gamer-chat__reset {
   border-color: var(--surface-border);
   background: #ffffff;
   color: var(--primary-text);
 }
 
-html[data-theme="light"] .gamer-chat__footer {
+html[data-theme="light"] .gamer-chat__footer,
+html[data-theme="light"] .gamer-chat__composer {
   border-color: var(--surface-border);
+  background: #ffffff;
+}
+
+html[data-theme="light"] .gamer-chat__composer textarea {
+  color: var(--primary-text);
+}
+
+html[data-theme="light"] .gamer-chat__composer textarea::placeholder {
+  color: var(--secondary-text);
+}
+
+html[data-theme="light"] .gamer-chat__typing {
+  border-color: var(--surface-border);
+  background: #f4f4f5;
 }
 
 html[data-theme="light"] .not-found {

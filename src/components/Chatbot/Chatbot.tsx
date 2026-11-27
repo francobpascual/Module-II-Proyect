@@ -1,94 +1,52 @@
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Bot, MessageCircle, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent, KeyboardEvent } from "react";
+import {
+  ArrowRight,
+  Bot,
+  MessageCircle,
+  RotateCcw,
+  Send,
+  X,
+} from "lucide-react";
 import { Link } from "react-router";
+import { useAuth } from "../../hooks/useAuth";
+import type { ChatAction } from "./chatbotConfig";
+import { useChatConversation } from "./useChatConversation";
 import "./Chatbot.css";
 
-const whatsappUrl = "https://wa.me/5493813654038";
-const directionsUrl =
-  "https://www.google.com/maps/dir/?api=1&destination=-26.8365833%2C-65.207167";
-
-const chatOptions = [
-  { id: "buy", label: "¿Cómo comprar videojuegos?" },
-  { id: "cart", label: "¿Cómo funciona el carrito?" },
-  { id: "payment", label: "¿Qué métodos de pago hay?" },
-  { id: "compatibility", label: "¿Cómo verificar mi PC?" },
-  { id: "checker", label: "Descargar detector de PC" },
-  { id: "location", label: "¿Dónde encontrarnos?" },
-  { id: "whatsapp", label: "Contactar por WhatsApp" },
-] as const;
-
-type ChatTopic = (typeof chatOptions)[number]["id"];
-
-interface ChatAction {
-  label: string;
-  href: string;
-  external?: boolean;
-  download?: boolean;
+interface FooterLayout {
+  bottomOffset: number;
+  panelMaxHeight: number | null;
+  hideWidget: boolean;
 }
 
-interface ChatAnswer {
-  message: string;
-  action?: ChatAction;
-}
-
-const chatAnswers: Record<ChatTopic, ChatAnswer> = {
-  buy: {
-    message:
-      "Explorá el catálogo, elegí un juego y agregalo al carrito. Para finalizar, iniciá sesión y completá el checkout. Es una compra de demostración: no se realizan cobros reales.",
-    action: { label: "Explorar el catálogo", href: "/#catalogo" },
-  },
-  cart: {
-    message:
-      "El carrito guarda los juegos de tu cuenta en este dispositivo. Desde allí podés revisar o quitar productos y continuar al checkout.",
-    action: { label: "Ver mi carrito", href: "/cart" },
-  },
-  payment: {
-    message:
-      "El checkout es una simulación académica de pago con tarjeta. No se procesa ningún pago ni se realizan cobros reales.",
-    action: { label: "Ir al checkout", href: "/checkout" },
-  },
-  compatibility: {
-    message:
-      "Iniciá sesión y registrá los componentes con GAMERLIX PC Checker. En la ficha de un juego con requisitos configurados vas a poder comparar tu PC. La herramienta ofrece una orientación, no mide FPS.",
-    action: { label: "Ver los datos de mi PC", href: "/mi-pc" },
-  },
-  checker: {
-    message:
-      "El detector está disponible para Windows. Descargalo y ejecutalo; luego iniciá sesión para vincular los datos detectados a tu perfil.",
-    action: {
-      label: "Descargar detector",
-      href: "/downloads/GAMERLIX_PC_Checker_v5.exe",
-      download: true,
-    },
-  },
-  location: {
-    message:
-      "Nos encontrás en RollingCode School, General Paz 570, Barrio Sur, San Miguel de Tucumán.",
-    action: {
-      label: "Cómo llegar",
-      href: directionsUrl,
-      external: true,
-    },
-  },
-  whatsapp: {
-    message:
-      "Podés escribirnos directamente al +54 9 381 365 4038. El chat se abrirá en una nueva pestaña.",
-    action: {
-      label: "Abrir WhatsApp",
-      href: whatsappUrl,
-      external: true,
-    },
-  },
+const initialFooterLayout: FooterLayout = {
+  bottomOffset: 0,
+  panelMaxHeight: null,
+  hideWidget: false,
 };
 
 function Chatbot() {
+  const { isAuthenticated } = useAuth();
+  const {
+    messages,
+    isTyping,
+    sendMessage,
+    selectOption,
+    resetConversation,
+  } = useChatConversation(isAuthenticated);
+
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState<ChatTopic | null>(null);
+  const [input, setInput] = useState("");
+  const [footerLayout, setFooterLayout] =
+    useState<FooterLayout>(initialFooterLayout);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const lastMessageId = messages[messages.length - 1]?.id;
 
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") setIsOpen(false);
     };
 
@@ -96,15 +54,139 @@ function Chatbot() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
-  const selectedOption = chatOptions.find(
-    (option) => option.id === selectedTopic
-  );
-  const selectedAnswer = selectedTopic
-    ? chatAnswers[selectedTopic]
-    : null;
+  useEffect(() => {
+    if (!isOpen || !bodyRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    bodyRef.current.scrollTo({
+      top: bodyRef.current.scrollHeight,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+  }, [isOpen, isTyping, messages]);
+
+  useEffect(() => {
+    const footer = document.querySelector<HTMLElement>(".cinematic-footer");
+    if (!footer) return;
+
+    let frameId = 0;
+    let previousLayout = initialFooterLayout;
+
+    const updateFooterLayout = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        const bounds = footer.getBoundingClientRect();
+        const footerIsVisible =
+          bounds.top < window.innerHeight && bounds.bottom > 0;
+
+        const nextLayout: FooterLayout = footerIsVisible
+          ? {
+              bottomOffset: Math.max(
+                0,
+                Math.ceil(window.innerHeight - bounds.top + 20)
+              ),
+              panelMaxHeight: Math.max(
+                0,
+                Math.min(590, Math.floor(bounds.top - 104))
+              ),
+              hideWidget: bounds.top - 104 < 220,
+            }
+          : initialFooterLayout;
+
+        if (
+          previousLayout.bottomOffset !== nextLayout.bottomOffset ||
+          previousLayout.panelMaxHeight !== nextLayout.panelMaxHeight ||
+          previousLayout.hideWidget !== nextLayout.hideWidget
+        ) {
+          previousLayout = nextLayout;
+          setFooterLayout(nextLayout);
+        }
+      });
+    };
+
+    updateFooterLayout();
+    window.addEventListener("scroll", updateFooterLayout, { passive: true });
+    window.addEventListener("resize", updateFooterLayout);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", updateFooterLayout);
+      window.removeEventListener("resize", updateFooterLayout);
+    };
+  }, []);
+
+  function submitMessage(): void {
+    if (sendMessage(input)) setInput("");
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    submitMessage();
+  }
+
+  function handleInputKeyDown(event: KeyboardEvent<HTMLTextAreaElement>): void {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey &&
+      !event.nativeEvent.isComposing
+    ) {
+      event.preventDefault();
+      submitMessage();
+    }
+  }
+
+  function handleReset(): void {
+    resetConversation();
+    setInput("");
+  }
+
+  function renderAction(action: ChatAction) {
+    if (action.kind === "route") {
+      return (
+        <Link
+          className="gamer-chat__action"
+          to={action.href}
+          onClick={() => setIsOpen(false)}
+        >
+          {action.label}
+          <ArrowRight size={15} aria-hidden="true" />
+        </Link>
+      );
+    }
+
+    return (
+      <a
+        className="gamer-chat__action"
+        href={action.href}
+        target={action.kind === "external" ? "_blank" : undefined}
+        rel={action.kind === "external" ? "noopener noreferrer" : undefined}
+        download={action.kind === "download" ? true : undefined}
+        onClick={() => setIsOpen(false)}
+      >
+        {action.label}
+        <ArrowRight size={15} aria-hidden="true" />
+      </a>
+    );
+  }
+
+  const widgetStyle = {
+    ...(footerLayout.bottomOffset > 0
+      ? {
+          bottom: `calc(${footerLayout.bottomOffset}px + env(safe-area-inset-bottom))`,
+        }
+      : {}),
+    ...(footerLayout.hideWidget ? { visibility: "hidden" as const } : {}),
+  };
+
+  const panelStyle =
+    footerLayout.panelMaxHeight === null
+      ? undefined
+      : { maxHeight: `${footerLayout.panelMaxHeight}px` };
 
   return (
-    <div className="gamer-chat">
+    <div className="gamer-chat" style={widgetStyle}>
       {isOpen && (
         <section
           id="gamer-chat-window"
@@ -112,6 +194,7 @@ function Chatbot() {
           role="dialog"
           aria-modal="false"
           aria-labelledby="gamer-chat-title"
+          style={panelStyle}
         >
           <header className="gamer-chat__header">
             <span className="gamer-chat__avatar" aria-hidden="true">
@@ -126,87 +209,109 @@ function Chatbot() {
             </div>
             <button
               type="button"
+              className="gamer-chat__reset"
+              onClick={handleReset}
+              aria-label="Reiniciar conversación"
+              title="Reiniciar conversación"
+            >
+              <RotateCcw size={17} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
               className="gamer-chat__close"
               onClick={() => setIsOpen(false)}
               aria-label="Cerrar asistente"
             >
-              <X size={19} />
+              <X size={19} aria-hidden="true" />
             </button>
           </header>
 
-          <div className="gamer-chat__body" aria-live="polite">
-            <p className="gamer-chat__bubble gamer-chat__bubble--bot">
-              ¡Hola! Soy el asistente de GAMERLIX. ¿En qué puedo ayudarte?
-            </p>
-
-            {selectedOption && selectedAnswer ? (
-              <>
-                <p className="gamer-chat__bubble gamer-chat__bubble--user">
-                  {selectedOption.label}
-                </p>
-                <p className="gamer-chat__bubble gamer-chat__bubble--bot">
-                  {selectedAnswer.message}
-                </p>
-                {selectedAnswer.action &&
-                  (selectedAnswer.action.external ||
-                  selectedAnswer.action.download ? (
-                    <a
-                      className="gamer-chat__action"
-                      href={selectedAnswer.action.href}
-                      target={
-                        selectedAnswer.action.external
-                          ? "_blank"
-                          : undefined
-                      }
-                      rel={
-                        selectedAnswer.action.external
-                          ? "noopener noreferrer"
-                          : undefined
-                      }
-                      download={selectedAnswer.action.download || undefined}
-                    >
-                      {selectedAnswer.action.label}
-                      <ArrowRight size={15} aria-hidden="true" />
-                    </a>
-                  ) : (
-                    <Link
-                      className="gamer-chat__action"
-                      to={selectedAnswer.action.href}
-                    >
-                      {selectedAnswer.action.label}
-                      <ArrowRight size={15} aria-hidden="true" />
-                    </Link>
-                  ))}
-                <button
-                  type="button"
-                  className="gamer-chat__back"
-                  onClick={() => setSelectedTopic(null)}
-                >
-                  <ArrowLeft size={14} aria-hidden="true" />
-                  Volver al menú principal
-                </button>
-              </>
-            ) : (
+          <div
+            ref={bodyRef}
+            className="gamer-chat__body"
+            role="log"
+            aria-label="Conversación con el asistente"
+            aria-live="polite"
+            aria-relevant="additions text"
+          >
+            {messages.map((message) => (
               <div
-                className="gamer-chat__options"
-                aria-label="Opciones de ayuda"
+                key={message.id}
+                className={`gamer-chat__message gamer-chat__message--${message.role}`}
               >
-                {chatOptions.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    onClick={() => setSelectedTopic(option.id)}
-                  >
-                    {option.label}
-                    <ArrowRight size={14} aria-hidden="true" />
-                  </button>
-                ))}
+                <p className="gamer-chat__bubble">{message.text}</p>
+
+                {message.action && renderAction(message.action)}
+
+                {message.role === "assistant" &&
+                  message.id === lastMessageId &&
+                  message.options &&
+                  message.options.length > 0 && (
+                    <div
+                      className="gamer-chat__options"
+                      role="group"
+                      aria-label="Opciones de respuesta"
+                    >
+                      {message.options.slice(0, 3).map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => selectOption(option)}
+                        >
+                          {option.label}
+                          <ArrowRight size={14} aria-hidden="true" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+              </div>
+            ))}
+
+            {isTyping && (
+              <div
+                className="gamer-chat__message gamer-chat__message--assistant"
+                role="status"
+                aria-label="El asistente está escribiendo"
+              >
+                <div className="gamer-chat__typing" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </div>
               </div>
             )}
           </div>
 
           <footer className="gamer-chat__footer">
-            Asistente automático · GAMERLIX
+            <form
+              className="gamer-chat__composer"
+              onSubmit={handleSubmit}
+            >
+              <label className="gamer-chat__sr-only" htmlFor="gamer-chat-input">
+                Escribí tu consulta...
+              </label>
+              <textarea
+                id="gamer-chat-input"
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
+                onKeyDown={handleInputKeyDown}
+                placeholder="Escribí tu consulta..."
+                rows={1}
+                aria-label="Escribí tu consulta..."
+              />
+              <button
+                type="submit"
+                className="gamer-chat__send"
+                disabled={!input.trim() || isTyping}
+                aria-label="Enviar mensaje"
+                title="Enviar mensaje"
+              >
+                <Send size={18} aria-hidden="true" />
+              </button>
+            </form>
+            <p className="gamer-chat__disclaimer">
+              Asistente automático · respuestas locales
+            </p>
           </footer>
         </section>
       )}
@@ -217,9 +322,12 @@ function Chatbot() {
           isOpen ? "gamer-chat__toggle--open" : ""
         }`}
         onClick={() => setIsOpen((open) => !open)}
-        aria-label={isOpen ? "Cerrar asistente GAMERLIX" : "Abrir asistente GAMERLIX"}
+        aria-label={
+          isOpen ? "Cerrar asistente GAMERLIX" : "Abrir asistente GAMERLIX"
+        }
         aria-expanded={isOpen}
         aria-controls="gamer-chat-window"
+        hidden={footerLayout.hideWidget}
       >
         {isOpen ? <X size={23} /> : <MessageCircle size={23} />}
       </button>
