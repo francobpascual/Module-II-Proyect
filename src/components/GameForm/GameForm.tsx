@@ -339,7 +339,10 @@ function GameForm() {
           Volver al panel
         </Link>
 
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 md:p-8">
+        <div
+          className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 md:p-8"
+          data-reveal
+        >
           <div className="mb-8 flex items-center gap-3">
             <Gamepad2 size={30} className="text-red-500" />
 

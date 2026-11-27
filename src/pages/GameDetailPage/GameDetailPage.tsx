@@ -293,7 +293,7 @@ function GameDetailPage() {
           Volver al catálogo
         </Link>
 
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2" data-reveal>
           <div className="overflow-hidden rounded-2xl border border-zinc-800">
             <img
               src={selectedGame.image}
@@ -348,7 +348,10 @@ function GameDetailPage() {
         </div>
 
         {/* COMPATIBILIDAD DE HARDWARE */}
-        <section className="mt-14 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 md:p-8">
+        <section
+          className="mt-14 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 md:p-8"
+          data-reveal
+        >
           <div className="mb-7 flex flex-wrap items-start gap-4">
             <div className="rounded-xl border border-red-900/40 bg-red-950/20 p-3 text-red-500">
               <ScanSearch size={28} />

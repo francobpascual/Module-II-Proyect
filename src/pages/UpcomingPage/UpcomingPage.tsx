@@ -40,7 +40,10 @@ function UpcomingPage() {
           Volver al inicio
         </Link>
 
-        <header className="mb-12 border-b border-red-900/40 pb-10">
+        <header
+          className="mb-12 border-b border-red-900/40 pb-10"
+          data-reveal
+        >
           <div className="mb-5 flex items-center gap-3 text-red-500">
             <CalendarDays size={24} />
             <span className="text-xs font-bold tracking-[0.3em] uppercase">

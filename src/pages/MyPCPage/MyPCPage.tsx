@@ -91,7 +91,10 @@ function MyPCPage() {
           Volver al inicio
         </Link>
 
-        <header className="mb-10 border-b border-red-900/40 pb-8">
+        <header
+          className="mb-10 border-b border-red-900/40 pb-8"
+          data-reveal
+        >
           <div className="mb-4 flex items-center gap-2 text-red-500">
             <Settings2 size={21} />
 
@@ -112,7 +115,10 @@ function MyPCPage() {
         </header>
 
         {!specs ? (
-          <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center md:p-14">
+          <section
+            className="rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center md:p-14"
+            data-reveal
+          >
             <Monitor
               size={54}
               className="mx-auto mb-6 text-red-500"
@@ -161,7 +167,7 @@ function MyPCPage() {
               </a>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2" data-reveal>
               <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
                 <div className="mb-4 flex items-center gap-3">
                   <Cpu size={25} className="text-red-500" />
@@ -258,7 +264,10 @@ function MyPCPage() {
               </section>
             </div>
 
-            <section className="mt-5 rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+            <section
+              className="mt-5 rounded-xl border border-zinc-800 bg-zinc-900 p-6"
+              data-reveal
+            >
               <div className="mb-5 flex items-center gap-3">
                 <HardDrive
                   size={25}

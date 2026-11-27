@@ -61,7 +61,7 @@ export default function OrderSuccessPage() {
   if (!order) {
     return (
       <main className="order-success">
-        <div className="order-success__missing">
+        <div className="order-success__missing" data-reveal>
           <AlertCircle size={52} />
 
           <h1>NO HAY UN PEDIDO PARA MOSTRAR</h1>
@@ -90,7 +90,7 @@ export default function OrderSuccessPage() {
 
   return (
     <main className="order-success">
-      <div className="order-success__container">
+      <div className="order-success__container" data-reveal>
         <div className="order-success__icon">
           <CheckCircle2 size={58} strokeWidth={1.5} />
         </div>

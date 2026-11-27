@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowDown } from "lucide-react";
 import { useGames } from "../../hooks/useGames";
+import InteractiveBackground from "../../components/InteractiveBackground/InteractiveBackground";
 import GameList from "../../components/GameList/GameList";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import "./HomePage.css";
@@ -25,6 +26,7 @@ function HomePage() {
           aria-hidden="true"
           fetchPriority="high"
         />
+        <InteractiveBackground />
         <div className="home-hero__content">
           <p className="home-hero__eyebrow">
             <span aria-hidden="true" />
@@ -49,8 +51,9 @@ function HomePage() {
       </section>
 
       <section id="catalogo" className="home-catalog" aria-labelledby="catalog-title">
+        <InteractiveBackground />
         <div className="home-catalog__container">
-          <header className="home-catalog__header">
+          <header className="home-catalog__header" data-reveal>
             <div>
               <p className="home-catalog__eyebrow">Elegí tu próxima partida</p>
               <h2 id="catalog-title">
@@ -67,7 +70,7 @@ function HomePage() {
             </span>
           </header>
 
-          <div className="home-catalog__tools">
+          <div className="home-catalog__tools" data-reveal>
             <div className="home-catalog__search">
               <SearchBar
                 searchTerm={searchTerm}
