@@ -72,4 +72,76 @@ export const seedGames: Game[] = [
       "Windows 10, 8 GB RAM, NVIDIA GTX 960, 70 GB.",
     developer: "Santa Monica Studio",
   },
+   {
+    id: "7",
+    title: "Dead Island 2",
+    price: 25999,
+    category: "Aventura",
+    image: "/images/1-deadisland2.jpeg",
+    description:
+      "Un virus mortal se extiende por Los Ángeles y está convirtiendo a sus habitantes en zombis",
+    requirements:
+      "Windows 10, AMD FX-9590 / Intel Core i7-7700HQ, 16 GB RAM, NVIDIA GTX 1070 / AMD RX Vega 56, 50 GB.",
+    developer: "Santa Monica Studio",
+  },
+    {
+    id: "8",
+    title: "Party Animals",
+    price: 25999,
+    category: "Aventura",
+    image: "/images/2-partyanimals.jpeg",
+    description:
+      "!Pelea contra tus amigos como perritos, gatitos y otras criaturas peludas en PARTY ANIMALS!",
+    requirements:
+      "Windows 10, Intel Core i5 / AMD equivalent, 8 GB RAM, NVIDIA GTX 1070 / AMD RX Vega 56, 50 GB.",
+    developer: "Recreate Games",
+  },
+      {
+    id: "9",
+    title: "Dead Space",
+    price: 59444,
+    category: "Shooter",
+    image: "/images/3-DeadSpace.jpeg",
+    description:
+      "Vuelve el clásico de terror y supervivencia de ciencia ficción, recreado completamente para ofrecer una experiencia más inmersiva (incluidas mejoras visuales, sonoras y de jugabilidad) al mismo tiempo que se mantiene fiel a la emocionante visión del juego original.",
+    requirements:
+      "Windows 10, Ryzen 5 2600x, Core i5 8600, 8 GB RAM, NVIDIA GTX 1070 / AMD RX Vega 56, 50 GB.",
+    developer: "Electronic Arts",
+  },
+        {
+    id: "10",
+    title: "Cup Head",
+    price: 56989,
+    category: "Shooter",
+    image: "/images/4-cuphead.jpeg",
+    description:
+      "Cuphead es un juego de acción clásico estilo dibujos animados que se centra en combates contra el jefe. Inspirado en los dibujos animados de los años 30, los aspectos visual y sonoro están diseñados con esmero empleando las mismas técnicas de la época, es decir, animación tradicional a mano, fondos de acuarela y grabaciones..",
+    requirements:
+      "Windows 10, Intel Core2 Duo E8400, 3.0GHz or AMD Athlon 64 X2 6000+, 3.0GHz or higher, NVIDIA GTX 1070 / AMD RX Vega 56, 50 GB.",
+    developer: "Studio MDHR Entertainment Inc.",
+  },
+          {
+    id: "11",
+    title: "FC 2027",
+    price: 54000,
+    category: "futbol",
+    image: "/images/5-fc2027.jpeg",
+    description:
+      "Te damos la bienvenida a The World's Game en EA SPORTS FC™ 27. Adéntrate en The Grounds, un espacio de juego donde las calles se encuentran con el estadio, y siente un mayor control en cada modo, ya que las innovaciones impulsadas por la comunidad ofrecen una jugabilidad más fiel al fútbol.",
+    requirements:
+      "Windows 10, Intel Core2 Duo E8400, 3.0GHz or AMD Athlon 64 X2 6000+, 3.0GHz or higher, NVIDIA GTX 1070 / AMD RX Vega 56, 50 GB.",
+    developer: "EA CANADA, EA Romania",
+  },
+          {
+    id: "12",
+    title: "Mortal Shell II",
+    price: 32000,
+    category: "Shooter",
+    image: "/images/6-mortalshel.jpeg",
+    description:
+      "Su carne es tu arma. Mortal Shell II es la secuela independiente de un RPG de acción con peleas despiadadas y llenas de adrenalina. Posee guerreros excepcionales, derroca dioses falsos y redime un mundo en destrucción.",
+    requirements:
+      "Windows 10,  Intel Core i7-10700K @ 3.8 GHz or better or AMD Ryzen 5 3600 @ 3.6 GHz or better",
+    developer: "Studio MDHR Entertainment Inc.",
+  },
 ];
