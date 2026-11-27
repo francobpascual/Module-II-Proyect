@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,8 +15,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const [loginError, setLoginError] = useState("");
+  const accountRegistered = searchParams.get("registered") === "1";
 
   const {
     register,
@@ -61,6 +63,15 @@ function LoginPage() {
           <p className="mt-2 text-sm text-zinc-400">
             Ingresá tus credenciales para continuar
           </p>
+
+          {accountRegistered && (
+            <p
+              role="status"
+              className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
+            >
+              Cuenta creada correctamente. Ya podés iniciar sesión.
+            </p>
+          )}
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -140,6 +151,16 @@ function LoginPage() {
             Iniciar sesión
           </button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-zinc-400">
+          ¿Todavía no tenés una cuenta?{" "}
+          <Link
+            to="/register"
+            className="font-semibold text-red-400 transition hover:text-red-300"
+          >
+            Registrate
+          </Link>
+        </p>
       </div>
     </main>
   );

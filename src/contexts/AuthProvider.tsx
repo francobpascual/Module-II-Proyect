@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import type { AuthUser } from "./AuthContext";
@@ -12,6 +12,14 @@ interface AuthProviderProps {
 function AuthProvider({ children }: AuthProviderProps) {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(
     () => authService.getCurrentUser()
+  );
+
+  useEffect(
+    () =>
+      authService.subscribeUsers(() => {
+        setCurrentUser(authService.refreshCurrentUser());
+      }),
+    []
   );
 
   function login(email: string, password: string): boolean {

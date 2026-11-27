@@ -1,14 +1,18 @@
 import { Navigate, Outlet } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 
-function ProtectedRoute() {
+interface ProtectedRouteProps {
+  adminOnly?: boolean;
+}
+
+function ProtectedRoute({ adminOnly = false }: ProtectedRouteProps) {
   const { isAuthenticated, isAdmin } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isAdmin) {
+  if (adminOnly && !isAdmin) {
     return <Navigate to="/" replace />;
   }
 
